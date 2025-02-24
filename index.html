@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory Management</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        .gradient-header {
+            background: linear-gradient(90deg, #6a11cb, #2575fc);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .search-box {
+            margin: 20px 0;
+        }
+        .oval-search {
+            border-radius: 25px;
+            padding: 10px 20px;
+            border: 2px solid #6a11cb;
+            width: 100%;
+            max-width: 400px;
+            margin: 20px auto;
+            display: flex;
+            align-items: center;
+            background: white;
+        }
+        .oval-search input {
+            border: none;
+            outline: none;
+            flex: 1;
+            margin-left: 10px;
+            background: transparent;
+        }
+        .oval-search i {
+            color: #6a11cb;
+            font-size: 1.2rem;
+        }
+        .logo-header {
+            font-size: 2.5rem;
+            margin-right: 15px;
+        }
+        .table-custom {
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        }
+        .table-custom thead {
+            background: #6a11cb;
+            color: white;
+        }
+        .btn-edit {
+            padding: 5px 12px;
+            border-radius: 8px;
+        }
+
+        .modal-body .form-label {
+    margin-bottom: 0.2rem;
+}
+.modal-body .form-control {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+.modal-header {
+    background: linear-gradient(90deg, #6a11cb, #2575fc);
+    color: white ;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+}
+        @media (max-width: 576px) {
+            .table td, .table th {
+                padding: 0.75rem;
+                font-size: 0.9rem;
+            }
+            .oval-search {
+                margin: 10px auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="gradient-header">
+        <div class="d-flex align-items-center justify-content-center">
+            <i class="bi bi-boxes logo-header"></i>
+            <h1 class="mb-0">Inventory System</h1>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Search Box -->
+        <div class="search-box">
+            <div class="input-group">
+                <select id="categoryDropdown" class="form-select">
+                    <option value="" disabled selected>Pilih kategori...</option>
+                    <option value="Air Mineral">Air Mineral</option>
+                    <option value="Bakery">Bakery</option>
+                    <option value="Customize">Customize</option>
+                </select>
+                <button id="searchButton" class="btn btn-primary" type="button">
+                    <span id="spinner" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
+                    <i class="bi bi-search"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Pencarian Tabel -->
+        <div class="oval-search">
+            <i class="bi bi-funnel"></i>
+            <input type="text" id="tableSearchInput" placeholder="Cari data...">
+        </div>
+
+        <!-- Tabel Data -->
+        <div class="table-responsive">
+            <table class="table table-custom table-hover">
+                <thead>
+                    <tr>
+                        <th><i class="bi bi-upc-scan"></i> PLU</th>
+                        <th><i class="bi bi-card-text"></i> Deskripsi</th>
+                        <th><i class="bi bi-box"></i> Qty</th>
+                        <th><i class="bi bi-gear"></i> Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <!-- Data akan dimasukkan di sini -->
+                    <tr>
+                        <td colspan="4" class="text-center">Pilih kategori untuk memuat data</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Tombol Halaman Berikutnya -->
+   <div class="d-flex justify-content-end mt-4">
+    <button id="nextPageButton" class="btn btn-primary btn-next" style="display: none;">
+        <i class="bi bi-arrow-right"></i> Lanjut
+    </button>
+</div>
+</div>
+
+        <!-- Modal Edit -->
+<div class="modal fade" id="editModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Edit Item</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="editForm">
+            <!-- Baris 1: Rak, PLU, Barcode -->
+            <div class="row g-2 mb-3">
+              <div class="col-4">
+                <label class="form-label small">Rak</label>
+                <input type="text" class="form-control form-control-sm" id="editRak">
+              </div>
+              <div class="col-4">
+                <label class="form-label small">PLU</label>
+                <input type="number" class="form-control form-control-sm" id="editPlu" readonly>
+              </div>
+              <div class="col-4">
+                <label class="form-label small">Barcode</label>
+                <input type="number" class="form-control form-control-sm" id="editBarcode">
+              </div>
+            </div>
+  
+            <!-- Baris 2: Deskripsi -->
+            <div class="row mb-3">
+              <div class="col-12">
+                <label class="form-label small">Deskripsi</label>
+                <input type="text" class="form-control form-control-sm" id="editDesc">
+              </div>
+            </div>
+  
+            <!-- Baris 3: Qty, RAPJ, On Hand -->
+            <div class="row g-2 mb-3">
+              <div class="col-4">
+                <label class="form-label small">Qty</label>
+                <input type="number" class="form-control form-control-sm" id="editQty">
+              </div>
+              <div class="col-4">
+                <label class="form-label small">RAPJ</label>
+                <input type="number" class="form-control form-control-sm" id="editRapj">
+              </div>
+              <div class="col-4">
+                <label class="form-label small">On Hand</label>
+                <input type="number" class="form-control form-control-sm" id="editOnhand" readonly>
+              </div>
+            </div>
+  
+            <!-- Baris 4: Add Qty dan Reset -->
+            <div class="row g-2 mb-3">
+              <div class="col-6">
+                <label class="form-label small">Add Qty</label>
+                <input type="number" class="form-control form-control-sm" id="addQty">
+              </div>
+              <div class="col-3 d-flex align-items-end">
+                <button type="button" class="btn btn-sm btn-success w-100" id="applyAddQty">
+                  <i class="bi bi-plus-circle"></i> Apply
+                </button>
+              </div>
+              <div class="col-3 d-flex align-items-end">
+                <button type="button" class="btn btn-sm btn-danger w-100" id="resetQty">
+                  <i class="bi bi-arrow-counterclockwise"></i> Reset
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+   
+  
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.getElementById('searchButton').addEventListener('click', function() {
+            const spinner = document.getElementById('spinner');
+            const category = document.getElementById('categoryDropdown').value;
+            
+            if (!category) {
+                alert("Silakan pilih kategori terlebih dahulu!");
+                return;
+            }
+
+            const url = `https://script.google.com/macros/s/AKfycbweh0fwFrEplA_IGnKWzRJMZx3VONzYxmxQ_UGnZgbdh6m8UtQ630keSGjaMIgIl4dc/exec?value=${category}`;
+
+            spinner.style.display = 'inline-block';
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    spinner.style.display = 'none';
+                    localStorage.setItem('fetchedData', JSON.stringify(data));
+                    populateTable(data);
+                    document.getElementById('nextPageButton').style.display = 'block';
+                })
+                .catch(error => {
+                    spinner.style.display = 'none';
+                    console.error('Error:', error);
+                });
+        });
+
+        // Di dalam fungsi populateTable, ubah bagian button edit:
+function populateTable(data) {
+    const tbody = document.getElementById('tableBody');
+    tbody.innerHTML = '';
+    
+    data.forEach(item => {
+        const row = `<tr>
+            <td>${item.plu}</td>
+            <td>${item.description}</td>
+            <td>${item.qty}</td>
+            <td>
+                <button class="btn btn-sm btn-warning btn-edit" 
+                        data-item='${JSON.stringify(item)}'>
+                    <i class="bi bi-pencil"></i> Edit
+                </button>
+            </td>
+        </tr>`;
+        tbody.innerHTML += row;
+    });
+}
+
+document.getElementById('tableBody').addEventListener('click', function(e) {
+    if(e.target.closest('.btn-edit')) {
+        const button = e.target.closest('.btn-edit');
+        const itemData = JSON.parse(button.dataset.item);
+        
+        // Isi semua field di modal
+        document.getElementById('editRak').value = itemData.rak;
+        document.getElementById('editPlu').value = itemData.plu;
+        document.getElementById('editBarcode').value = itemData.barcode;
+        document.getElementById('editDesc').value = itemData.description;
+        document.getElementById('editQty').value = itemData.qty;
+        document.getElementById('editRapj').value = itemData.rapj;
+        document.getElementById('editOnhand').value = itemData.onhand;
+        
+        new bootstrap.Modal(document.getElementById('editModal')).show();
+        currentEditItem = itemData;
+    }
+});
+
+function updateOnHand() {
+  const qty = parseInt(document.getElementById('editQty').value) || 0;
+  const rapj = parseInt(document.getElementById('editRapj').value) || 0;
+  document.getElementById('editOnhand').value = qty + rapj;
+}
+
+// Event listeners untuk update On Hand
+document.getElementById('editQty').addEventListener('input', updateOnHand);
+document.getElementById('editRapj').addEventListener('input', updateOnHand);
+
+// Apply Add Qty
+document.getElementById('applyAddQty').addEventListener('click', function() {
+  const addQty = parseInt(document.getElementById('addQty').value) || 0;
+  const currentQty = parseInt(document.getElementById('editQty').value) || 0;
+  document.getElementById('editQty').value = currentQty + addQty;
+  document.getElementById('addQty').value = '';
+  updateOnHand();
+});
+
+// Reset Qty
+document.getElementById('resetQty').addEventListener('click', function() {
+  document.getElementById('editQty').value = 0;
+  document.getElementById('addQty').value = '';
+  updateOnHand();
+});
+
+// Saat modal ditampilkan
+document.getElementById('editModal').addEventListener('shown.bs.modal', function() {
+  updateOnHand();
+});
+
+// Fungsi simpan data
+document.getElementById('applyAddQty').addEventListener('click', function() {
+  const updatedItem = {
+    rak: document.getElementById('editRak').value,
+    plu: document.getElementById('editPlu').value,
+    barcode: document.getElementById('editBarcode').value,
+    description: document.getElementById('editDesc').value,
+    qty: parseInt(document.getElementById('editQty').value) || 0,
+    rapj: parseInt(document.getElementById('editRapj').value) || 0,
+    onhand: parseInt(document.getElementById('editOnhand').value)
+  };
+
+  const storedData = JSON.parse(localStorage.getItem('fetchedData'));
+  const updatedData = storedData.map(item => {
+    return item.plu === currentEditItem.plu ? updatedItem : item;
+  });
+  
+  localStorage.setItem('fetchedData', JSON.stringify(updatedData));
+  populateTable(updatedData);
+  bootstrap.Modal.getInstance(document.getElementById('editModal')).hide();
+});
+
+    
+
+        // Fungsi Pencarian Tabel
+        document.getElementById('tableSearchInput').addEventListener('input', function() {
+            const searchValue = this.value.toLowerCase();
+            const rows = document.querySelectorAll('#tableBody tr');
+            
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                let matches = false;
+                
+                cells.forEach(cell => {
+                    if (cell.textContent.toLowerCase().includes(searchValue)) {
+                        matches = true;
+                    }
+                });
+                
+                row.style.display = matches ? '' : 'none';
+            });
+        });
+
+        document.getElementById('nextPageButton').addEventListener('click', function() {
+            window.location.href = 'halaman-berikutnya.html';
+        });
+    </script>
+</body>
+</html>
