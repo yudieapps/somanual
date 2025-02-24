@@ -226,25 +226,26 @@
         }));
 
         // Kirim ke Google Sheets
-        const response = await fetch('https://script.google.com/macros/s/AKfycbxKNnnIpY1Xve2-WcqkADrimLSa2fbE4B9Ca45RZtMcx5UModzkCyLxkRFWHSvHI0rjGQ/exec', {
-            method: 'POST',
-        mode: 'no-cors', // Hapus jika ingin melihat error detail
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
+const response = await fetch('https://script.google.com/macros/s/AKfycbxKNnnIpY1Xve2-WcqkADrimLSa2fbE4B9Ca45RZtMcx5UModzkCyLxkRFWHSvHI0rjGQ/exec', {
+    method: 'POST',
+    mode: 'no-cors', // Hapus jika ingin melihat error detail
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+});
 
-      if (response.ok || response.status === 0) { // Mode 'no-cors' akan return status 0
-        alert('Data berhasil dikirim!');
-      } else {
-        alert('Gagal mengirim data.');
-      }
-    } catch (error) {
-      alert('Error: ' + error.message);
-    
-    } finally {
-        button.innerHTML = '<i class="bi bi-save"></i> Simpan';
-        button.disabled = false;
-    }
+if (response.ok || response.status === 0) { // Mode 'no-cors' akan return status 0
+    alert('Data berhasil dikirim!');
+    localStorage.clear(); // <-- Ini yang ditambahkan untuk clear local storage
+} else {
+    alert('Gagal mengirim data.');
+}
+} catch (error) {
+    alert('Error: ' + error.message);
+
+} finally {
+    button.innerHTML = '<i class="bi bi-cloud-arrow-up-fill"></i> Upload Data';
+    button.disabled = false;
+}
 });
     </script>
 </body>
