@@ -138,5 +138,5 @@ document.getElementById('applyAddQty').addEventListener('click', function() {
         });
 
         document.getElementById('nextPageButton').addEventListener('click', function() {
-            window.location.href = 'halaman-berikutnya.html';
+            window.location.href = 'entryoh.html';
         });
