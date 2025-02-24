@@ -107,7 +107,7 @@
 
    <!-- Tombol Halaman Berikutnya -->
    <div class="d-flex justify-content-end mt-4 mb-4 g-4">
-    <button id="nextPageButton" class="btn btn-primary btn-next">
+    <button id="saveButton" class="btn btn-primary btn-next">
         <i class="bi bi-arrow-right"></i> Lanjut
     </button>
     </div>
@@ -184,8 +184,7 @@
                     // Update UI
                     const row = this.closest('tr');
                     const selisihCell = row.querySelector('td:nth-child(9)');
-                    const newSelisih = total - revisiQty;
-
+                    const newSelisih = total - revisi;
                     selisihCell.textContent = newSelisih.toLocaleString('id-ID');
                     selisihCell.className = `non-editable text-end ${newSelisih < 0 ? 'text-danger' : 'text-success'
                         }`;
@@ -193,35 +192,60 @@
             });
         });
 
-        document.getElementById('nextPageButton').addEventListener('click', async () => {
-    const button = document.getElementById('nextPageButton');
+        document.getElementById('saveButton').addEventListener('click', async () => {
+    const button = document.getElementById('saveButton');
     button.innerHTML = '<div class="spinner-border spinner-border-sm" role="status"></div> Mengirim...';
     button.disabled = true;
-    const storedData = JSON.parse(localStorage.getItem('fetchedData')) || [];
-    
+
     try {
-        const response = await fetch('https://script.google.com/macros/s/AKfycbzTLYv2Dsp8SD5SWXH1T6nyA3Z6uTpKXBMRfc7E_InDMuN-esSRenmanadZX7jUttPBnA/exec', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(storedData)
+        const storedData = JSON.parse(localStorage.getItem('fetchedData')) || [];
+        
+        // Validasi data
+        const requiredFields = ['rak', 'plu', 'barcode', 'description', 'qty', 'rapj', 'oh'];
+        const isValid = storedData.every(item => {
+            return requiredFields.every(field => item[field] !== undefined) && 
+                   !isNaN(item.qty) && 
+                   !isNaN(item.rapj) && 
+                   !isNaN(item.oh);
         });
 
-        if (response.ok) {
-            alert('Data berhasil dikirim ke Google Sheets!');
-            window.location.href = 'halaman-berikutnya.html'; // Ganti dengan halaman tujuan
-        } else {
-            throw new Error('Gagal mengirim data');
+        if (!isValid) {
+            throw new Error('Data tidak valid: Pastikan semua field terisi dengan benar');
         }
+
+        // Format data sesuai struktur sheet
+        const payload = storedData.map(item => ({
+            rak: item.rak.toString().trim(),
+            plu: item.plu.toString().trim(),
+            barcode: item.barcode.toString().trim(),
+            description: item.description.toString().trim(),
+            qty: Number(item.qty) || 0,
+            rapj: Number(item.rapj) || 0,
+            oh: Number(item.oh) || 0,
+            revisi: Number(item.revisi) || 0
+        }));
+
+        // Kirim ke Google Sheets
+        const response = await fetch('https://script.google.com/macros/s/AKfycbxKNnnIpY1Xve2-WcqkADrimLSa2fbE4B9Ca45RZtMcx5UModzkCyLxkRFWHSvHI0rjGQ/exec', {
+            method: 'POST',
+        mode: 'no-cors', // Hapus jika ingin melihat error detail
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (response.ok || response.status === 0) { // Mode 'no-cors' akan return status 0
+        alert('Data berhasil dikirim!');
+      } else {
+        alert('Gagal mengirim data.');
+      }
     } catch (error) {
-        console.error('Error:', error);
-        alert('Terjadi kesalahan saat mengirim data');
-        button.innerHTML = '<i class="bi bi-arrow-right"></i> Lanjut';
+      alert('Error: ' + error.message);
+    
+    } finally {
+        button.innerHTML = '<i class="bi bi-save"></i> Simpan';
         button.disabled = false;
     }
 });
-
     </script>
 </body>
 
