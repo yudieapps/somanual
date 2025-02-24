@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory Management</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        .gradient-header {
+            background: linear-gradient(90deg, #6a11cb, #2575fc);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+       
+        /* Untuk memastikan overlay bekerja baik */
+        .table-responsive {
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo-header {
+            font-size: 2.5rem;
+            margin-right: 15px;
+        }
+        .table-custom {
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        }
+        .table-custom thead {
+            background: #6a11cb;
+            color: white;
+        }
+        .status-radio {
+    border: 2px solid #fff !important;
+    box-shadow: 0 0 0 2px rgba(0,0,0,0.25);
+}
+
+.oh-input {
+    width: 100px;
+    text-align: center;
+    border: 1px solid #ced4da;
+}
+
+.oh-input:focus {
+    box-shadow: 0 0 0 3px rgba(106,17,203,0.25);
+}
+        
+        @media (max-width: 576px) {
+            .table td, .table th {
+                padding: 0.70rem;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="gradient-header">
+        <div class="d-flex align-items-center justify-content-center">
+            <i class="bi bi-boxes logo-header"></i>
+            <h1 class="mb-0">Inventory System</h1>
+        </div>
+        <div class="d-flex align-items-center justify-content-center">
+            <h4>Entry On Hand</h4>
+        </div>
+        
+    </header>
+
+    <div class="container">
+         
+        <!-- Tabel Data -->
+        <div class="table-responsive">
+            <table class="table table-custom table-hover">
+                <thead>
+                    <tr>
+                        <th><i class="bi bi-upc-scan"></i> PLU</th>
+                        <th><i class="bi bi-card-text"></i> Deskripsi</th>
+                        <th><i class="bi bi-pencil text-center"></i> OH</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <!-- Data akan dimasukkan di sini -->
+                </tbody>
+            </table>
+        </div>
+
+
+   <!-- Tombol Halaman Berikutnya -->
+   <div class="d-flex justify-content-end mt-4 mb-4 g-4">
+    <button id="nextPageButton" class="btn btn-primary btn-next">
+        <i class="bi bi-arrow-right"></i> Lanjut
+    </button>
+    </div>
+    </div>       
+  
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Fungsi untuk menampilkan data ke tabel
+function populateTable(data) {
+    const tbody = document.getElementById('tableBody');
+    tbody.innerHTML = '';
+
+    data.forEach(item => {
+        const row = `
+            <tr>
+                <td>${item.plu}</td>
+                <td>${item.description}</td>
+                <td>
+                    <input type="number" 
+                           class="form-control oh-input" 
+                           value="${item.oh || 0}" 
+                           data-plu="${item.plu}"
+                           style="width: 100px">
+                </td>
+            </tr>`;
+        tbody.innerHTML += row;
+    });
+
+    // Tambahkan event listener untuk input OH
+    document.querySelectorAll('.oh-input').forEach(input => {
+        input.addEventListener('change', function() {
+            const plu = this.dataset.plu;
+            const newOh = parseInt(this.value) || 0; // Nilai baru dari input OH
+            
+            // Update data di Local Storage
+            const storedData = JSON.parse(localStorage.getItem('fetchedData'));
+            const updatedData = storedData.map(item => {
+                if (item.plu === plu) {
+                    return {
+                        ...item,
+                        oh: newOh, // Perbarui nilai OH
+                        selisih: item.total - newOh // Hitung nilai selisih
+                    };
+                }
+                return item;
+            });
+
+            // Simpan data yang diperbarui ke Local Storage
+            localStorage.setItem('fetchedData', JSON.stringify(updatedData));
+        });
+    });
+}
+
+// Memuat data saat halaman dimuat
+document.addEventListener('DOMContentLoaded', function() {
+    const storedData = JSON.parse(localStorage.getItem('fetchedData'));
+    if (storedData) {
+        // Proses data untuk memastikan ada properti total dan selisih
+        const processedData = storedData.map(item => ({
+            ...item,
+            total: item.total || (item.qty + (item.rapj || 0)), // Hitung total jika belum ada
+            oh: item.oh || 0, // Pastikan nilai OH ada
+            selisih: item.selisih || (item.total - (item.oh || 0)) // Hitung selisih
+        }));
+        
+        localStorage.setItem('fetchedData', JSON.stringify(processedData));
+        populateTable(processedData);
+    }
+});
+
+// Navigasi ke halaman berikutnya
+document.getElementById('nextPageButton').addEventListener('click', function() {
+    window.location.href = 'selisihfixed.html';
+});
+
+    </script>
+    
+</body>
+</html>
