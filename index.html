@@ -38,6 +38,32 @@
             color: #6a11cb;
             font-size: 1.2rem;
         }
+        .oval-search {
+        position: sticky;
+        top: 10px; /* Jarak dari atas saat sticky */
+        z-index: 1000; /* Pastikan di atas komponen lain */
+        background: white; /* Warna background */
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1); /* Efek bayangan */
+        margin: 10px auto;
+        border-radius: 25px;
+        padding: 10px 20px;
+        border: 2px solid #6a11cb;
+        width: 100%;
+        max-width: 400px;
+        display: flex;
+        align-items: center;
+        
+        /* Animasi halus saat scroll */
+        transition: all 0.3s ease;
+        }
+
+        /* Untuk memastikan overlay bekerja baik */
+        .table-responsive {
+            position: relative;
+            z-index: 1;
+        }
+
+
         .logo-header {
             font-size: 2.5rem;
             margin-right: 15px;
@@ -57,21 +83,21 @@
         }
 
         .modal-body .form-label {
-    margin-bottom: 0.2rem;
-}
-.modal-body .form-control {
-    padding: 0.25rem 0.5rem;
-    font-size: 0.875rem;
-}
-.modal-header {
-    background: linear-gradient(90deg, #6a11cb, #2575fc);
-    color: white ;
-    padding-top: 0.5rem;
-    padding-bottom: 0.5rem;
-}
+        margin-bottom: 0.2rem;
+        }
+        .modal-body .form-control {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+        }
+        .modal-header {
+        background: linear-gradient(90deg, #6a11cb, #2575fc);
+        color: white ;
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+        }
         @media (max-width: 576px) {
             .table td, .table th {
-                padding: 0.75rem;
+                padding: 0.70rem;
                 font-size: 0.9rem;
             }
             .oval-search {
@@ -86,6 +112,7 @@
             <i class="bi bi-boxes logo-header"></i>
             <h1 class="mb-0">Inventory System</h1>
         </div>
+        <h4>SAT PRAMUKA BEKASI</h4>
     </header>
 
     <div class="container">
@@ -119,7 +146,7 @@
                         <th><i class="bi bi-upc-scan"></i> PLU</th>
                         <th><i class="bi bi-card-text"></i> Deskripsi</th>
                         <th><i class="bi bi-box"></i> Qty</th>
-                        <th><i class="bi bi-gear"></i> Aksi</th>
+                        <th><i class="bi bi-gear"></i> Edit</th>
                     </tr>
                 </thead>
                 <tbody id="tableBody">
@@ -132,7 +159,7 @@
         </div>
 
         <!-- Tombol Halaman Berikutnya -->
-   <div class="d-flex justify-content-end mt-4">
+   <div class="d-flex justify-content-end mt-4 mb-4">
     <button id="nextPageButton" class="btn btn-primary btn-next" style="display: none;">
         <i class="bi bi-arrow-right"></i> Lanjut
     </button>
@@ -153,7 +180,7 @@
             <div class="row g-2 mb-3">
               <div class="col-4">
                 <label class="form-label small">Rak</label>
-                <input type="text" class="form-control form-control-sm" id="editRak">
+                <input type="text" class="form-control form-control-sm" id="editRak" readonly>
               </div>
               <div class="col-4">
                 <label class="form-label small">PLU</label>
@@ -161,7 +188,7 @@
               </div>
               <div class="col-4">
                 <label class="form-label small">Barcode</label>
-                <input type="number" class="form-control form-control-sm" id="editBarcode">
+                <input type="number" class="form-control form-control-sm" id="editBarcode" readonly>
               </div>
             </div>
   
@@ -169,7 +196,7 @@
             <div class="row mb-3">
               <div class="col-12">
                 <label class="form-label small">Deskripsi</label>
-                <input type="text" class="form-control form-control-sm" id="editDesc">
+                <input type="text" class="form-control form-control-sm" id="editDesc" readonly>
               </div>
             </div>
   
@@ -177,15 +204,15 @@
             <div class="row g-2 mb-3">
               <div class="col-4">
                 <label class="form-label small">Qty</label>
-                <input type="number" class="form-control form-control-sm" id="editQty">
+                <input type="number" class="form-control form-control-sm" id="editQty" readonly>
               </div>
               <div class="col-4">
                 <label class="form-label small">RAPJ</label>
-                <input type="number" class="form-control form-control-sm" id="editRapj">
+                <input type="number" class="form-control form-control-sm" id="editRapj" readonly>
               </div>
               <div class="col-4">
-                <label class="form-label small">On Hand</label>
-                <input type="number" class="form-control form-control-sm" id="editOnhand" readonly>
+                <label class="form-label small">Total</label>
+                <input type="number" class="form-control form-control-sm" id="editTotal" readonly>
               </div>
             </div>
   
@@ -275,7 +302,7 @@ document.getElementById('tableBody').addEventListener('click', function(e) {
         document.getElementById('editDesc').value = itemData.description;
         document.getElementById('editQty').value = itemData.qty;
         document.getElementById('editRapj').value = itemData.rapj;
-        document.getElementById('editOnhand').value = itemData.onhand;
+        document.getElementById('editTotal').value = itemData.total;
         
         new bootstrap.Modal(document.getElementById('editModal')).show();
         currentEditItem = itemData;
@@ -285,7 +312,7 @@ document.getElementById('tableBody').addEventListener('click', function(e) {
 function updateOnHand() {
   const qty = parseInt(document.getElementById('editQty').value) || 0;
   const rapj = parseInt(document.getElementById('editRapj').value) || 0;
-  document.getElementById('editOnhand').value = qty + rapj;
+  document.getElementById('editTotal').value = qty + rapj;
 }
 
 // Event listeners untuk update On Hand
@@ -322,7 +349,7 @@ document.getElementById('applyAddQty').addEventListener('click', function() {
     description: document.getElementById('editDesc').value,
     qty: parseInt(document.getElementById('editQty').value) || 0,
     rapj: parseInt(document.getElementById('editRapj').value) || 0,
-    onhand: parseInt(document.getElementById('editOnhand').value)
+    onhand: parseInt(document.getElementById('editTotal').value)
   };
 
   const storedData = JSON.parse(localStorage.getItem('fetchedData'));
