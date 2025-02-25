@@ -1,1 +1,63 @@
+/* Navbar */
+.navbar {
+    background: linear-gradient(90deg, #6a11cb, #2575fc);
+}
 
+/* Background utama */
+body {
+    background-color: #eef2f7;
+}
+
+/* Hero Section */
+.hero {
+    background: linear-gradient(45deg, #6a11cb, #2575fc);
+    padding: 80px 0;
+    border-radius: 0 0 20px 20px; /* Efek lengkung di bawah */
+}
+
+/* Responsivitas Hero Section */
+@media (max-width: 768px) {
+    .hero {
+        padding: 50px 20px;
+    }
+}
+
+/* Warna Teks */
+.navbar .nav-link {
+    color: white;
+    font-weight: 500;
+}
+
+.navbar .nav-link:hover {
+    opacity: 0.8;
+}
+
+/* Card Styling */
+.card {
+    background-color: #ffffff;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Efek bayangan untuk depth */
+}
+
+/* Card Body */
+.card-body {
+    padding: 20px;
+}
+
+/* Responsivitas Card */
+@media (max-width: 768px) {
+    .card {
+        margin-bottom: 15px;
+    }
+}
+
+/* Tombol dengan warna yang tetap selaras */
+.btn-primary {
+    background: linear-gradient(90deg, #6a11cb, #2575fc);
+    border: none;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(90deg, #5a0fbf, #1e63db);
+}
