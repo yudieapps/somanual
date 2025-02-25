@@ -160,36 +160,37 @@
             </tr>`;
     }).join('');
 
+            // Event listener untuk revisi
             document.querySelectorAll('.editable-input').forEach(input => {
-    input.addEventListener('change', function () {
-        const plu = this.dataset.plu;
-        const revisiQty = safeNumber(this.value); // Ambil nilai revisi yang dimasukkan user
-        const total = safeNumber(this.dataset.total);
+                input.addEventListener('change', function () {
+                    const plu = this.dataset.plu;
+                    const revisiQty = safeNumber(this.value);
+                    const total = safeNumber(this.dataset.total);
 
-        // Update hanya field revisiqty di localStorage
-        const updatedData = storedData.map(item => {
-            if (item.plu === plu) {
-                return {
-                    ...item,
-                    revisiqty: revisiQty, // Simpan revisiQty dengan benar
-                    selisih_revisi: total - revisiQty
-                };
-            }
-            return item;
+                    // Update hanya field revisiqty
+                    const updatedData = storedData.map(item => {
+                        if (item.plu === plu) {
+                            return {
+                                ...item,
+                                revisiqty: revisiQty,
+                                selisih_revisi: total - revisiQty
+                            };
+                        }
+                        return item;
+                    });
+
+                    localStorage.setItem('fetchedData', JSON.stringify(updatedData));
+
+                    // Update UI
+                    const row = this.closest('tr');
+                    const selisihCell = row.querySelector('td:nth-child(9)');
+                    const newSelisih = total - revisi;
+                    selisihCell.textContent = newSelisih.toLocaleString('id-ID');
+                    selisihCell.className = `non-editable text-end ${newSelisih < 0 ? 'text-danger' : 'text-success'
+                        }`;
+                });
+            });
         });
-
-        localStorage.setItem('fetchedData', JSON.stringify(updatedData));
-
-        // Update UI selisih
-        const row = this.closest('tr');
-        const selisihCell = row.querySelector('td:nth-child(4)'); // Kolom ke-4 untuk selisih
-        const newSelisih = total - revisiQty;
-        selisihCell.textContent = newSelisih.toLocaleString('id-ID');
-        selisihCell.className = `non-editable text-center ${newSelisih < 0 ? 'text-danger' : 'text-success'}`;
-
-        console.log("Updated localStorage:", JSON.parse(localStorage.getItem('fetchedData')));
-    });
-});
 
         document.getElementById('saveButton').addEventListener('click', async () => {
     const button = document.getElementById('saveButton');
@@ -206,115 +207,23 @@
                    !isNaN(item.qty) && 
                    !isNaN(item.rapj) && 
                    !isNaN(item.oh);
-document.addEventListener('DOMContentLoaded', () => {
-const storedData = JSON.parse(localStorage.getItem('fetchedData')) || [];
-const tbody = document.getElementById('tableBody');
+        });
 
-// Fungsi validasi  
-        const safeNumber = (num) => Number(num) || 0;  
+        if (!isValid) {
+            throw new Error('Data tidak valid: Pastikan semua field terisi dengan benar');
+        }
 
-        tbody.innerHTML = storedData  
-.filter(item => {  
-    const qty = safeNumber(item.qty);  
-    const rapj = safeNumber(item.rapj);  
-    const oh = safeNumber(item.oh);  
-    const total = qty + rapj;  
-    const selisih = total - oh;  
-    return selisih !== 0; // Hanya ambil data dengan selisih != 0  
-})  
-.map(item => {  
-    // Kode mapping yang sama seperti sebelumnya  
-    const qty = safeNumber(item.qty);  
-    const oh = safeNumber(item.oh);  
-    const rapj = safeNumber(item.rapj);  
-    const total = qty + rapj;  
-    const selisih = total - oh;  
-
-    return `  
-        <tr>  
-            <td class="non-editable">${item.plu || '-'}</td>  
-            <td class="non-editable">${item.description || '-'}</td>  
-            <td class="non-editable text-center">${total.toLocaleString('id-ID')}</td>  
-            <td class="non-editable text-center ${selisih < 0 ? 'text-danger' : 'text-success'}">  
-                ${selisih.toLocaleString('id-ID')}  
-            </td>  
-            <td>  
-                <input type="number"   
-                       class="form-control editable-input text-center"   
-                       value="${safeNumber(item.revisiqty)}"  
-                       data-plu="${item.plu}"  
-                       data-total="${total}"  
-                       style="width: 100px">  
-            </td>  
-        </tr>`;  
-}).join('');  
-
-        // Event listener untuk revisi  
-        document.querySelectorAll('.editable-input').forEach(input => {  
-            input.addEventListener('change', function () {  
-                const plu = this.dataset.plu;  
-                const revisiQty = safeNumber(this.value);  
-                const total = safeNumber(this.dataset.total);  
-
-                // Update hanya field revisiqty  
-                const updatedData = storedData.map(item => {  
-                    if (item.plu === plu) {  
-                        return {  
-                            ...item,  
-                            revisiqty: revisiQty,  
-                            selisih_revisi: total - revisiQty  
-                        };  
-                    }  
-                    return item;  
-                });  
-
-                localStorage.setItem('fetchedData', JSON.stringify(updatedData));  
-
-                // Update UI  
-                const row = this.closest('tr');  
-                const selisihCell = row.querySelector('td:nth-child(9)');  
-                const newSelisih = total - revisi;  
-                selisihCell.textContent = newSelisih.toLocaleString('id-ID');  
-                selisihCell.className = `non-editable text-end ${newSelisih < 0 ? 'text-danger' : 'text-success'  
-                    }`;  
-            });  
-        });  
-    });  
-
-    document.getElementById('saveButton').addEventListener('click', async () => {  
-const button = document.getElementById('saveButton');  
-button.innerHTML = '<div class="spinner-border spinner-border-sm" role="status"></div> Mengirim...';  
-button.disabled = true;  
-
-try {  
-    const storedData = JSON.parse(localStorage.getItem('fetchedData')) || [];  
-      
-    // Validasi data  
-    const requiredFields = ['rak', 'plu', 'barcode', 'description', 'qty', 'rapj', 'oh'];  
-    const isValid = storedData.every(item => {  
-        return requiredFields.every(field => item[field] !== undefined) &&   
-               !isNaN(item.qty) &&   
-               !isNaN(item.rapj) &&   
-               !isNaN(item.oh);  
-    });  
-
-    if (!isValid) {  
-        throw new Error('Data tidak valid: Pastikan semua field terisi dengan benar');  
-    }  
-
-    // Format data sesuai struktur sheet  
-    const payload = storedData.map(item => ({  
-        rak: item.rak.toString().trim(),  
-        plu: item.plu.toString().trim(),  
-        barcode: item.barcode.toString().trim(),  
-        description: item.description.toString().trim(),  
-        qty: Number(item.qty) || 0,  
-        rapj: Number(item.rapj) || 0,  
-        oh: Number(item.oh) || 0,  
-        revisi: Number(item.revisi) || 0  
-    }));
-
-
+        // Format data sesuai struktur sheet
+        const payload = storedData.map(item => ({
+            rak: item.rak.toString().trim(),
+            plu: item.plu.toString().trim(),
+            barcode: item.barcode.toString().trim(),
+            description: item.description.toString().trim(),
+            qty: Number(item.qty) || 0,
+            rapj: Number(item.rapj) || 0,
+            oh: Number(item.oh) || 0,
+            revisi: Number(item.revisi) || 0
+        }));
 
         // Kirim ke Google Sheets
 const response = await fetch('https://script.google.com/macros/s/AKfycbxKNnnIpY1Xve2-WcqkADrimLSa2fbE4B9Ca45RZtMcx5UModzkCyLxkRFWHSvHI0rjGQ/exec', {
