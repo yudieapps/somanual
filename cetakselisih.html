@@ -152,7 +152,7 @@
                 <td>
                     <input type="number" 
                            class="form-control editable-input text-center" 
-                           value="${safeNumber(item.revisiqty)}"
+                           value="${safeNumber(item.revisi)}"
                            data-plu="${item.plu}"
                            data-total="${total}"
                            style="width: 100px">
@@ -164,7 +164,7 @@
             document.querySelectorAll('.editable-input').forEach(input => {
                 input.addEventListener('change', function () {
                     const plu = this.dataset.plu;
-                    const revisiQty = safeNumber(this.value);
+                    const revisi = safeNumber(this.value);
                     const total = safeNumber(this.dataset.total);
 
                     // Update hanya field revisiqty
@@ -172,8 +172,8 @@
                         if (item.plu === plu) {
                             return {
                                 ...item,
-                                revisiqty: revisiQty,
-                                selisih_revisi: total - revisiQty
+                                revisi: revisi,
+                                selisih_revisi: total - revisi
                             };
                         }
                         return item;
@@ -201,7 +201,7 @@
         const storedData = JSON.parse(localStorage.getItem('fetchedData')) || [];
         
         // Validasi data
-        const requiredFields = ['rak', 'plu', 'barcode', 'description', 'qty', 'rapj', 'oh'];
+        const requiredFields = ['rak', 'plu', 'barcode', 'description', 'qty', 'rapj', 'oh',revisi];
         const isValid = storedData.every(item => {
             return requiredFields.every(field => item[field] !== undefined) && 
                    !isNaN(item.qty) && 
