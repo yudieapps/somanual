@@ -1,1 +1,149 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory Management</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="somanual.css" rel="stylesheet">  
+</head>
+<body>
+    <header class="gradient-header">
+        <div class="d-flex align-items-center justify-content-center">
+            <i class="bi bi-boxes logo-header"></i>
+            <h1 class="mb-0">Inventory System</h1>
+        </div>
+        <h4>SAT PRAMUKA BEKASI</h4>
+    </header>
 
+    <div class="container">
+        <!-- Search Box -->
+        <div class="search-box">
+            <div class="input-group">
+                <select id="categoryDropdown" class="form-select">
+                    <option value="" disabled selected>Pilih kategori...</option>
+                    <option value="Air Mineral">Air Mineral</option>
+                    <option value="Bakery">Bakery</option>
+                    <option value="Customize">Customize</option>
+                </select>
+                <button id="searchButton" class="btn btn-primary" type="button">
+                    <span id="spinner" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
+                    <i class="bi bi-search"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Pencarian Tabel -->
+        <div class="oval-search">
+            <i class="bi bi-funnel"></i>
+            <input type="text" id="tableSearchInput" placeholder="Cari data...">
+        </div>
+
+        <!-- Tabel Data -->
+        <div class="table-responsive">
+            <table class="table table-custom table-hover">
+                <thead>
+                    <tr>
+                        <th><i class="bi bi-upc-scan"></i> PLU</th>
+                        <th><i class="bi bi-card-text"></i> Deskripsi</th>
+                        <th><i class="bi bi-box"></i> Qty</th>
+                        <th><i class="bi bi-gear"></i> Edit</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <!-- Data akan dimasukkan di sini -->
+                    <tr>
+                        <td colspan="4" class="text-center">Pilih kategori untuk memuat data</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Tombol Halaman Berikutnya -->
+   <div class="d-flex justify-content-end mt-4 mb-4">
+    <button id="nextPageButton" class="btn btn-primary btn-next" style="display: none;">
+        <i class="bi bi-arrow-right"></i> Lanjut
+    </button>
+</div>
+</div>
+
+        <!-- Modal Edit -->
+<div class="modal fade" id="editModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Edit Item</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="editForm">
+            <!-- Baris 1: Rak, PLU, Barcode -->
+            <div class="row g-2 mb-3">
+              <div class="col-4">
+                <label class="form-label small">Rak</label>
+                <input type="text" class="form-control form-control-sm" id="editRak" readonly>
+              </div>
+              <div class="col-4">
+                <label class="form-label small">PLU</label>
+                <input type="number" class="form-control form-control-sm" id="editPlu" readonly>
+              </div>
+              <div class="col-4">
+                <label class="form-label small">Barcode</label>
+                <input type="number" class="form-control form-control-sm" id="editBarcode" readonly>
+              </div>
+            </div>
+  
+            <!-- Baris 2: Deskripsi -->
+            <div class="row mb-3">
+              <div class="col-12">
+                <label class="form-label small">Deskripsi</label>
+                <input type="text" class="form-control form-control-sm" id="editDesc" readonly>
+              </div>
+            </div>
+  
+            <!-- Baris 3: Qty, RAPJ, On Hand -->
+            <div class="row g-2 mb-3">
+              <div class="col-4">
+                <label class="form-label small">Qty</label>
+                <input type="number" class="form-control form-control-sm" id="editQty" readonly>
+              </div>
+              <div class="col-4">
+                <label class="form-label small">RAPJ</label>
+                <input type="number" class="form-control form-control-sm" id="editRapj" readonly>
+              </div>
+              <div class="col-4">
+                <label class="form-label small">Total</label>
+                <input type="number" class="form-control form-control-sm" id="editTotal" readonly>
+              </div>
+            </div>
+  
+            <!-- Baris 4: Add Qty dan Reset -->
+            <div class="row g-2 mb-3">
+              <div class="col-6">
+                <label class="form-label small">Add Qty</label>
+                <input type="number" class="form-control form-control-sm" id="addQty">
+              </div>
+              <div class="col-3 d-flex align-items-end">
+                <button type="button" class="btn btn-sm btn-success w-100" id="applyAddQty">
+                  <i class="bi bi-plus-circle"></i> Apply
+                </button>
+              </div>
+              <div class="col-3 d-flex align-items-end">
+                <button type="button" class="btn btn-sm btn-danger w-100" id="resetQty">
+                  <i class="bi bi-arrow-counterclockwise"></i> Reset
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+   
+  
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="entryso.js"></script>
+</body>
+</html>
