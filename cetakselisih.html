@@ -201,7 +201,7 @@
         const storedData = JSON.parse(localStorage.getItem('fetchedData')) || [];
         
         // Validasi data
-        const requiredFields = ['rak', 'plu', 'barcode', 'description', 'qty', 'rapj', 'oh',revisi];
+        const requiredFields = ['rak', 'plu', 'barcode', 'description', 'qty', 'rapj', 'oh','revisi'];
         const isValid = storedData.every(item => {
             return requiredFields.every(field => item[field] !== undefined) && 
                    !isNaN(item.qty) && 
