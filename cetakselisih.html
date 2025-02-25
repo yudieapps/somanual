@@ -160,37 +160,36 @@
             </tr>`;
     }).join('');
 
-            // Event listener untuk revisi
             document.querySelectorAll('.editable-input').forEach(input => {
-                input.addEventListener('change', function () {
-                    const plu = this.dataset.plu;
-                    const revisiQty = safeNumber(this.value);
-                    const total = safeNumber(this.dataset.total);
+    input.addEventListener('change', function () {
+        const plu = this.dataset.plu;
+        const revisiQty = safeNumber(this.value); // Ambil nilai revisi yang dimasukkan user
+        const total = safeNumber(this.dataset.total);
 
-                    // Update hanya field revisiqty
-                    const updatedData = storedData.map(item => {
-                        if (item.plu === plu) {
-                            return {
-                                ...item,
-                                revisiqty: revisiQty,
-                                selisih_revisi: total - revisiQty
-                            };
-                        }
-                        return item;
-                    });
-
-                    localStorage.setItem('fetchedData', JSON.stringify(updatedData));
-
-                    // Update UI
-                    const row = this.closest('tr');
-                    const selisihCell = row.querySelector('td:nth-child(9)');
-                    const newSelisih = total - revisi;
-                    selisihCell.textContent = newSelisih.toLocaleString('id-ID');
-                    selisihCell.className = `non-editable text-end ${newSelisih < 0 ? 'text-danger' : 'text-success'
-                        }`;
-                });
-            });
+        // Update hanya field revisiqty di localStorage
+        const updatedData = storedData.map(item => {
+            if (item.plu === plu) {
+                return {
+                    ...item,
+                    revisiqty: revisiQty, // Simpan revisiQty dengan benar
+                    selisih_revisi: total - revisiQty
+                };
+            }
+            return item;
         });
+
+        localStorage.setItem('fetchedData', JSON.stringify(updatedData));
+
+        // Update UI selisih
+        const row = this.closest('tr');
+        const selisihCell = row.querySelector('td:nth-child(4)'); // Kolom ke-4 untuk selisih
+        const newSelisih = total - revisiQty;
+        selisihCell.textContent = newSelisih.toLocaleString('id-ID');
+        selisihCell.className = `non-editable text-center ${newSelisih < 0 ? 'text-danger' : 'text-success'}`;
+
+        console.log("Updated localStorage:", JSON.parse(localStorage.getItem('fetchedData')));
+    });
+});
 
         document.getElementById('saveButton').addEventListener('click', async () => {
     const button = document.getElementById('saveButton');
