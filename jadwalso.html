@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory Management</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="styles.css">    <style>
+        .table th {
+            background-color: #f8f9fa;
+        }
+        .collapse-toggle {
+            cursor: pointer;
+        }
+        .rak-count {
+            font-size: 0.9em;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand text-white fw-bold" href="#">Pramuka Apps</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="#">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="#">Jadwal SO</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="#">Report</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="container py-4">
+        <h1 class="mb-4">Jadwal Rak per Tanggal</h1>
+
+        <!-- Label Instruksi -->
+        <div class="alert alert-info" role="alert">
+            Klik pada <strong>tanggal</strong> atau <strong>jumlah rak</strong> untuk menampilkan detail rak.
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Tanggal</th>
+                        <th>Jumlah Rak</th>
+                        <th>Detail Rak</th>
+                    </tr>
+                </thead>
+                <tbody id="scheduleTable"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and Popper.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script>
+    
+    <script>
+        const scheduleData = [
+            {"tanggal": "2025-02-03", "rak": "AT1"},
+            {"tanggal": "2025-02-04", "rak": "AU0"},
+            {"tanggal": "2025-02-04", "rak": "AU1"},
+            {"tanggal": "2025-02-05", "rak": "AU3"},
+            {"tanggal": "2025-02-05", "rak": "AU4"},
+            {"tanggal": "2025-02-05", "rak": "AU5"},
+            {"tanggal": "2025-02-06", "rak": "AU6"},
+            {"tanggal": "2025-02-06", "rak": "AU7"},
+            {"tanggal": "2025-02-07", "rak": "BC1"},
+            {"tanggal": "2025-02-08", "rak": "BC2"},
+            {"tanggal": "2025-02-08", "rak": "CF1"},
+            {"tanggal": "2025-02-08", "rak": "CH1"},
+            {"tanggal": "2025-02-08", "rak": "CT1"},
+            {"tanggal": "2025-02-08", "rak": "CW1"},
+            {"tanggal": "2025-02-10", "rak": "CB1"},
+            {"tanggal": "2025-02-10", "rak": "CT2"},
+            {"tanggal": "2025-02-10", "rak": "CT3"},
+            {"tanggal": "2025-02-10", "rak": "CT4"},
+            {"tanggal": "2025-02-11", "rak": "HB1"},
+            {"tanggal": "2025-02-11", "rak": "HB2"},
+            {"tanggal": "2025-02-11", "rak": "HB3"},
+            {"tanggal": "2025-02-11", "rak": "HB4"},
+            {"tanggal": "2025-02-11", "rak": "HB5"},
+            {"tanggal": "2025-02-11", "rak": "HB6"},
+            {"tanggal": "2025-02-11", "rak": "HB7"},
+            {"tanggal": "2025-02-11", "rak": "HC1"},
+            {"tanggal": "2025-02-11", "rak": "HD1"},
+            {"tanggal": "2025-02-11", "rak": "HG1"},
+            {"tanggal": "2025-02-11", "rak": "HH1"},
+            {"tanggal": "2025-02-11", "rak": "HI1"},
+            {"tanggal": "2025-02-11", "rak": "HM1"},
+            {"tanggal": "2025-02-11", "rak": "HN1"},
+            {"tanggal": "2025-02-11", "rak": "HS1"},
+            {"tanggal": "2025-02-13", "rak": "AU2"},
+            {"tanggal": "2025-02-14", "rak": "AU8"},
+            {"tanggal": "2025-02-14", "rak": "AU9"},
+            {"tanggal": "2025-02-25", "rak": "JA1"},
+            {"tanggal": "2025-02-25", "rak": "JC1"},
+            {"tanggal": "2025-02-25", "rak": "KH1"},
+            {"tanggal": "2025-02-25", "rak": "KI1"},
+            {"tanggal": "2025-02-25", "rak": "KL1"},
+            {"tanggal": "2025-02-25", "rak": "KM1"},
+            {"tanggal": "2025-02-25", "rak": "KO1"},
+            {"tanggal": "2025-02-25", "rak": "KU1"},
+            {"tanggal": "2025-02-25", "rak": "KU2"},
+            {"tanggal": "2025-02-26", "rak": "KU3"},
+            {"tanggal": "2025-02-26", "rak": "KU4"},
+            {"tanggal": "2025-02-26", "rak": "KU5"},
+            {"tanggal": "2025-02-27", "rak": "KC1"},
+            {"tanggal": "2025-02-27", "rak": "KS1"},
+            {"tanggal": "2025-02-27", "rak": "KU6"},
+            {"tanggal": "2025-02-27", "rak": "LC1"},
+            {"tanggal": "2025-02-27", "rak": "LC2"}
+        ];
+
+        function groupByDate(data) {
+            return data.reduce((acc, item) => {
+                acc[item.tanggal] = acc[item.tanggal] || [];
+                acc[item.tanggal].push(item.rak);
+                return acc;
+            }, {});
+        }
+
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('id-ID', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        }
+
+        function displaySchedule() {
+            const groupedData = groupByDate(scheduleData);
+            const tbody = document.getElementById('scheduleTable');
+            let index = 0;
+
+            Object.keys(groupedData).sort().forEach(date => {
+                const raks = groupedData[date];
+                const collapseId = `collapse${index}`;
+                
+                tbody.innerHTML += `
+                    <tr>
+                        <td class="collapse-toggle" data-bs-toggle="collapse" data-bs-target="#${collapseId}">
+                            ${formatDate(date)}
+                        </td>
+                        <td class="collapse-toggle" data-bs-toggle="collapse" data-bs-target="#${collapseId}">
+                            ${raks.length} rak <i class="bi bi-info-circle text-primary"></i>
+                        </td>
+                        <td>
+                            <div class="collapse" id="${collapseId}">
+                                <ul class="list-unstyled mb-0">
+                                    ${raks.map(rak => `<li>${rak}</li>`).join('')}
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                index++;
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', displaySchedule);
+    </script>
+</body>
+</html>
